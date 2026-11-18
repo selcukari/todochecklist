@@ -102,7 +102,7 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
                     label: Text(
                       _girisYapiliyor
                           ? 'Giriş Yapılıyor...'
-                          : 'Google (Gmail) ile Devam Et',
+                          : 'Google ile Devam Et',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

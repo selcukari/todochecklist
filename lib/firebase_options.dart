@@ -6,15 +6,6 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -41,46 +32,47 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: dotenv.get('Firebase_WebApiKey'),
-    appId: dotenv.get('Firebase_WebApiId'),
-    messagingSenderId: dotenv.get('Firebase_MessagingSenderId'),
-    projectId: dotenv.get('Firebase_ProjectId'),
-    storageBucket: dotenv.get('Firebase_StorageBucket'),
-  );
+  // 'const' kelimesi kaldırıldı ve 'static FirebaseOptions get ...' yapıldı.
+  static FirebaseOptions get web => FirebaseOptions(
+        apiKey: dotenv.env['Firebase_WebApiKey'] ?? '',
+        appId: dotenv.env['Firebase_WebApiId'] ?? '',
+        messagingSenderId: dotenv.env['Firebase_MessagingSenderId'] ?? '',
+        projectId: dotenv.env['Firebase_ProjectId'] ?? '',
+        storageBucket: dotenv.env['Firebase_StorageBucket'] ?? '',
+      );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: dotenv.get('Firebase_AndroidApiKey'),
-    appId: dotenv.get('Firebase_AndroidApiId'),
-    messagingSenderId: dotenv.get('Firebase_MessagingSenderId'),
-    projectId: dotenv.get('Firebase_ProjectId'),
-    storageBucket: dotenv.get('Firebase_StorageBucket'),
-  );
+  static FirebaseOptions get android => FirebaseOptions(
+        apiKey: dotenv.env['Firebase_AndroidApiKey'] ?? '',
+        appId: dotenv.env['Firebase_AndroidApiId'] ?? '',
+        messagingSenderId: dotenv.env['Firebase_MessagingSenderId'] ?? '',
+        projectId: dotenv.env['Firebase_ProjectId'] ?? '',
+        storageBucket: dotenv.env['Firebase_StorageBucket'] ?? '',
+      );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: dotenv.get('Firebase_IosApiKey'),
-    appId: dotenv.get('Firebase_IosApiId'),
-    messagingSenderId: dotenv.get('Firebase_MessagingSenderId'),
-    projectId: dotenv.get('Firebase_ProjectId'),
-    storageBucket: dotenv.get('Firebase_StorageBucket'),
-    iosBundleId: dotenv.get('Firebase_IosBundleId'),
-  );
+  static FirebaseOptions get ios => FirebaseOptions(
+        apiKey: dotenv.env['Firebase_IosApiKey'] ?? '',
+        appId: dotenv.env['Firebase_IosApiId'] ?? '',
+        messagingSenderId: dotenv.env['Firebase_MessagingSenderId'] ?? '',
+        projectId: dotenv.env['Firebase_ProjectId'] ?? '',
+        storageBucket: dotenv.env['Firebase_StorageBucket'] ?? '',
+        iosBundleId: dotenv.env['Firebase_IosBundleId'] ?? '',
+      );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: dotenv.get('Firebase_MacosApiKey'),
-    appId: dotenv.get('Firebase_MacosApiId'),
-    messagingSenderId: dotenv.get('Firebase_MessagingSenderId'),
-    projectId: dotenv.get('Firebase_ProjectId'),
-    storageBucket: dotenv.get('Firebase_StorageBucket'),
-    iosBundleId: dotenv.get('Firebase_IosBundleId'),
-  );
+  static FirebaseOptions get macos => FirebaseOptions(
+        apiKey: dotenv.env['Firebase_MacosApiKey'] ?? '',
+        appId: dotenv.env['Firebase_MacosApiId'] ?? '',
+        messagingSenderId: dotenv.env['Firebase_MessagingSenderId'] ?? '',
+        projectId: dotenv.env['Firebase_ProjectId'] ?? '',
+        storageBucket: dotenv.env['Firebase_StorageBucket'] ?? '',
+        iosBundleId: dotenv.env['Firebase_IosBundleId'] ?? '',
+      );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: dotenv.get('Firebase_WindowsApiKey'),
-    appId: dotenv.get('Firebase_WindowsApiId'),
-    messagingSenderId: dotenv.get('Firebase_MessagingSenderId'),
-    projectId: dotenv.get('Firebase_ProjectId'),
-    authDomain: 'todochecklist-f6461.firebaseapp.com',
-    storageBucket: dotenv.get('Firebase_StorageBucket'),
-  );
+  static FirebaseOptions get windows => FirebaseOptions(
+        apiKey: dotenv.env['Firebase_WindowsApiKey'] ?? '',
+        appId: dotenv.env['Firebase_WindowsApiId'] ?? '',
+        messagingSenderId: dotenv.env['Firebase_MessagingSenderId'] ?? '',
+        projectId: dotenv.env['Firebase_ProjectId'] ?? '',
+        authDomain: 'todochecklist-f6461.firebaseapp.com',
+        storageBucket: dotenv.env['Firebase_StorageBucket'] ?? '',
+      );
 }
