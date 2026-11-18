@@ -47,4 +47,3 @@ app.*.map.json
 
 # env file
 *.env
-sha-256.env
