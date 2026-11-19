@@ -10,6 +10,8 @@ class OgeFormSheet extends StatefulWidget {
     String kategori,
     Oncelik oncelik,
     DateTime? sonTarih,
+    DateTime? hatirlaticiZamani,
+    List<AltGorev> altGorevler,
   ) onKaydet;
 
   const OgeFormSheet({
@@ -24,15 +26,20 @@ class OgeFormSheet extends StatefulWidget {
 
 class _OgeFormSheetState extends State<OgeFormSheet> {
   late final TextEditingController _baslikController;
+  final TextEditingController _altGorevController = TextEditingController();
+
   late String _seciliKategori;
   late Oncelik _seciliOncelik;
   DateTime? _seciliTarih;
+  DateTime? _seciliHatirlatici;
+  late List<AltGorev> _altGorevler;
 
-  // İlk değerleri karşılaştırma için saklıyoruz
   late final String _ilkBaslik;
   late final String _ilkKategori;
   late final Oncelik _ilkOncelik;
   late final DateTime? _ilkTarih;
+  late final DateTime? _ilkHatirlatici;
+  late final List<AltGorev> _ilkAltGorevler;
 
   bool _onaylanmisCikis = false;
 
@@ -45,23 +52,26 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
     _ilkKategori = widget.mevcutOge?.kategori ?? 'Alışveriş';
     _ilkOncelik = widget.mevcutOge?.oncelik ?? Oncelik.orta;
     _ilkTarih = widget.mevcutOge?.sonTarih;
+    _ilkHatirlatici = widget.mevcutOge?.hatirlaticiZamani;
+    _ilkAltGorevler = List<AltGorev>.from(widget.mevcutOge?.altGorevler ?? []);
 
     _baslikController = TextEditingController(text: _ilkBaslik);
     _seciliKategori = _ilkKategori;
     _seciliOncelik = _ilkOncelik;
     _seciliTarih = _ilkTarih;
+    _seciliHatirlatici = _ilkHatirlatici;
+    _altGorevler = List<AltGorev>.from(_ilkAltGorevler);
 
-    // Yazı değiştikçe PopScope'un güncel kalması için dinleyici ekliyoruz
     _baslikController.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
     _baslikController.dispose();
+    _altGorevController.dispose();
     super.dispose();
   }
 
-  /// Formda başlangıç durumuna göre herhangi bir değişiklik olup olmadığını kontrol eder
   bool get _degisiklikVarMi {
     if (_onaylanmisCikis) return false;
 
@@ -69,8 +79,22 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
     final kategoriDegisti = _seciliKategori != _ilkKategori;
     final oncelikDegisti = _seciliOncelik != _ilkOncelik;
     final tarihDegisti = !_ayniGunMu(_seciliTarih, _ilkTarih);
+    final hatirlaticiDegisti = _seciliHatirlatici != _ilkHatirlatici;
+    final altGorevDegisti = _altGorevler.length != _ilkAltGorevler.length ||
+        List.generate(
+          _altGorevler.length,
+          (i) =>
+              _altGorevler[i].id != _ilkAltGorevler[i].id ||
+              _altGorevler[i].baslik != _ilkAltGorevler[i].baslik ||
+              _altGorevler[i].tamamlandi != _ilkAltGorevler[i].tamamlandi,
+        ).any((degisti) => degisti);
 
-    return baslikDegisti || kategoriDegisti || oncelikDegisti || tarihDegisti;
+    return baslikDegisti ||
+        kategoriDegisti ||
+        oncelikDegisti ||
+        tarihDegisti ||
+        hatirlaticiDegisti ||
+        altGorevDegisti;
   }
 
   bool _ayniGunMu(DateTime? a, DateTime? b) {
@@ -121,14 +145,72 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
     );
 
     if (secilen != null) {
-      setState(() => _seciliTarih = secilen);
+      setState(() {
+        _seciliTarih = secilen;
+        if (_seciliHatirlatici != null) {
+          _seciliHatirlatici = DateTime(
+            secilen.year,
+            secilen.month,
+            secilen.day,
+            _seciliHatirlatici!.hour,
+            _seciliHatirlatici!.minute,
+          );
+        }
+      });
     }
+  }
+
+  Future<void> _hatirlaticiSec() async {
+    final temelTarih = _seciliHatirlatici ?? _seciliTarih ?? DateTime.now();
+    final saat = await showTimePicker(
+      context: context,
+      initialTime: _seciliHatirlatici != null
+          ? TimeOfDay.fromDateTime(_seciliHatirlatici!)
+          : const TimeOfDay(hour: 9, minute: 0),
+      helpText: 'Hatırlatıcı Saati Seçin',
+      cancelText: 'İptal',
+      confirmText: 'Ayarla',
+    );
+
+    if (saat == null) return;
+
+    setState(() {
+      _seciliHatirlatici = DateTime(
+        temelTarih.year,
+        temelTarih.month,
+        temelTarih.day,
+        saat.hour,
+        saat.minute,
+      );
+    });
+  }
+
+  void _altGorevEkle() {
+    final metin = _altGorevController.text.trim();
+    if (metin.isEmpty) return;
+
+    setState(() {
+      _altGorevler = [
+        ..._altGorevler,
+        AltGorev(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          baslik: metin,
+        ),
+      ];
+      _altGorevController.clear();
+    });
   }
 
   String _tarihFormatla(DateTime tarih) {
     final gun = tarih.day.toString().padLeft(2, '0');
     final ay = tarih.month.toString().padLeft(2, '0');
     return '$gun.$ay.${tarih.year}';
+  }
+
+  String _hatirlaticiFormatla(DateTime zaman) {
+    final saat = zaman.hour.toString().padLeft(2, '0');
+    final dakika = zaman.minute.toString().padLeft(2, '0');
+    return '${_tarihFormatla(zaman)} • $saat:$dakika';
   }
 
   void _formuTamamla() {
@@ -142,13 +224,19 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
       return;
     }
 
-    // PopScope uyarısını tetiklemeden kapatmak için işaretliyoruz
     _onaylanmisCikis = true;
-    widget.onKaydet(metin, _seciliKategori, _seciliOncelik, _seciliTarih);
+    widget.onKaydet(
+      metin,
+      _seciliKategori,
+      _seciliOncelik,
+      _seciliTarih,
+      _seciliHatirlatici,
+      _altGorevler,
+    );
     Navigator.pop(context);
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     final renkSemasi = Theme.of(context).colorScheme;
     final klavyeBoslugu = MediaQuery.of(context).viewInsets.bottom;
@@ -167,7 +255,6 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. Kaydırılabilir Form Alanı
               Flexible(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
@@ -253,9 +340,8 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                           side: BorderSide(color: renkSemasi.outline),
                         ),
                         segments: Oncelik.values
-                            .map((o) =>
-                                ButtonSegment(value: o,
-                                label: Text(o.etiket)))
+                            .map((o) => ButtonSegment(
+                                value: o, label: Text(o.etiket)))
                             .toList(),
                         selected: {_seciliOncelik},
                         onSelectionChanged: (yeniSecim) {
@@ -263,6 +349,7 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                         },
                       ),
                       const SizedBox(height: 16),
+                      // Son Teslim Tarihi
                       Row(
                         children: [
                           Expanded(
@@ -289,12 +376,111 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                           ],
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      // Hatırlatıcı Bildirim Saati
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _hatirlaticiSec,
+                              icon: const Icon(
+                                  Icons.notifications_active_outlined,
+                                  size: 18),
+                              label: Text(
+                                _seciliHatirlatici == null
+                                    ? 'Hatırlatıcı Ekle (İsteğe Bağlı)'
+                                    : 'Hatırlat: ${_hatirlaticiFormatla(_seciliHatirlatici!)}',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          if (_seciliHatirlatici != null) ...[
+                            const SizedBox(width: 8),
+                            IconButton.filledTonal(
+                              tooltip: 'Hatırlatıcıyı Kaldır',
+                              onPressed: () =>
+                                  setState(() => _seciliHatirlatici = null),
+                              icon: Icon(Icons.close, color: renkSemasi.error),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // Alt Görevler (Checklist)
+                      const Text('Alt Görevler',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _altGorevController,
+                              textInputAction: TextInputAction.done,
+                              textCapitalization: TextCapitalization.sentences,
+                              onSubmitted: (_) => _altGorevEkle(),
+                              decoration: const InputDecoration(
+                                hintText: 'Alt adım veya liste öğesi ekle...',
+                                isDense: true,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            tooltip: 'Alt Görev Ekle',
+                            onPressed: _altGorevEkle,
+                            icon: const Icon(Icons.add),
+                          ),
+                        ],
+                      ),
+                      if (_altGorevler.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        ..._altGorevler.map(
+                          (alt) => CheckboxListTile(
+                            contentPadding: EdgeInsets.zero,
+                            dense: true,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            value: alt.tamamlandi,
+                            title: Text(
+                              alt.baslik,
+                              style: TextStyle(
+                                decoration: alt.tamamlandi
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color: alt.tamamlandi
+                                    ? renkSemasi.onSurface
+                                        .withValues(alpha: 0.5)
+                                    : renkSemasi.onSurface,
+                              ),
+                            ),
+                            onChanged: (val) {
+                              setState(() {
+                                _altGorevler = [
+                                  for (final item in _altGorevler)
+                                    if (item.id == alt.id)
+                                      item.copyWith(tamamlandi: val ?? false)
+                                    else
+                                      item,
+                                ];
+                              });
+                            },
+                            secondary: IconButton(
+                              tooltip: 'Sil',
+                              icon: const Icon(Icons.close, size: 18),
+                              onPressed: () {
+                                setState(() {
+                                  _altGorevler = _altGorevler
+                                      .where((i) => i.id != alt.id)
+                                      .toList();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
               ),
-
-              // 2. Telefonun Alt Çubuğunun Hemen Üstünde Sabit Duran Aksiyon Butonları
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Row(

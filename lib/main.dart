@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'firebase_options.dart'; // flutterfire configure ile oluşur
+import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
 import 'screens/liste_ana_sayfa.dart';
 import 'screens/login_sayfa.dart';
+import 'services/bildirim_servisi.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
@@ -15,6 +16,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await BildirimServisi().baslat();
 
   runApp(
     const ProviderScope(
@@ -34,7 +36,6 @@ class AkilliListeApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      // Durum çubuğu ikonlarını temaya göre ayarlar
       builder: (context, child) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return AnnotatedRegion<SystemUiOverlayStyle>(

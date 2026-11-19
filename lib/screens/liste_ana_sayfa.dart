@@ -26,7 +26,14 @@ class ListeAnaSayfa extends ConsumerWidget {
       useSafeArea: true,
       builder: (_) => OgeFormSheet(
         mevcutOge: mevcutOge,
-        onKaydet: (baslik, kategori, oncelik, sonTarih) {
+        onKaydet: (
+          baslik,
+          kategori,
+          oncelik,
+          sonTarih,
+          hatirlaticiZamani,
+          altGorevler,
+        ) {
           final notifier = ref.read(gorevlerProvider.notifier);
           if (mevcutOge == null) {
             notifier.ekle(
@@ -34,6 +41,8 @@ class ListeAnaSayfa extends ConsumerWidget {
               kategori: kategori,
               oncelik: oncelik,
               sonTarih: sonTarih,
+              hatirlaticiZamani: hatirlaticiZamani,
+              altGorevler: altGorevler,
             );
             gFToastShowToast(
               context: context,
@@ -48,6 +57,9 @@ class ListeAnaSayfa extends ConsumerWidget {
                 oncelik: oncelik,
                 sonTarih: sonTarih,
                 sonTarihiTemizle: sonTarih == null,
+                hatirlaticiZamani: hatirlaticiZamani,
+                hatirlaticiTemizle: hatirlaticiZamani == null,
+                altGorevler: altGorevler,
               ),
             );
             gFToastShowToast(
@@ -260,85 +272,87 @@ class ListeAnaSayfa extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 8),
-        ],
+        ],        
       ),
       body: filtrelenmisAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (hata, _) => Center(child: Text('Veriler yüklenemedi: $hata')),
         data: (gosterilecekListe) => CustomScrollView(
-          // Klavye açıkken de taşma olmaz; kaydırınca klavye kapanır
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           slivers: [
             SliverToBoxAdapter(
               child: Column(
                 children: [
-            IlerlemeOzetKarti(
-              tamamlananSayisi: tamamlananSayisi,
-              toplamSayi: tumOgeler.length,
-            ),
-            HizliEkleAlani(
-              onEkle: (baslik) {
-                // Seçili kategori 'Tümü' ise varsayılan kategori kullanılır
-                final kategori =
-                    seciliKategori == 'Tümü' ? 'Alışveriş' : seciliKategori;
-                ref.read(gorevlerProvider.notifier).ekle(
-                      baslik: baslik,
-                      kategori: kategori,
-                      oncelik: Oncelik.orta,
-                      sonTarih: null,
-                    );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: SearchBar(
-                hintText: 'Görev veya ürün ara...',
-                leading: Icon(Icons.search, color: renkSemasi.primary),
-                elevation: const WidgetStatePropertyAll(0),
-                backgroundColor: WidgetStatePropertyAll(renkSemasi.surface),
-                shape: WidgetStatePropertyAll(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: renkSemasi.outline),
+                  IlerlemeOzetKarti(
+                    tamamlananSayisi: tamamlananSayisi,
+                    toplamSayi: tumOgeler.length,
                   ),
-                ),
-                onChanged: (deger) =>
-                    ref.read(aramaMetniProvider.notifier).state = deger,
-              ),
-            ),
-            SizedBox(
-              height: 54,
-              child: ListView.separated(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                scrollDirection: Axis.horizontal,
-                itemCount: _kategoriler.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final kategori = _kategoriler[index];
-                  final secili = seciliKategori == kategori;
-                  return FilterChip(
-                    label: Text(kategori),
-                    selected: secili,
-                    showCheckmark: false,
-                    backgroundColor: renkSemasi.surface,
-                    selectedColor: renkSemasi.primary,
-                    side: BorderSide(
-                      color: secili ? renkSemasi.primary : renkSemasi.outline,
+                  HizliEkleAlani(
+                    onEkle: (baslik) {
+                      final kategori =
+                          seciliKategori == 'Tümü' ? 'Alışveriş' : seciliKategori;
+                      ref.read(gorevlerProvider.notifier).ekle(
+                            baslik: baslik,
+                            kategori: kategori,
+                            oncelik: Oncelik.orta,
+                            sonTarih: null,
+                          );
+                    },
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: SearchBar(
+                      hintText: 'Görev veya ürün ara...',
+                      leading: Icon(Icons.search, color: renkSemasi.primary),
+                      elevation: const WidgetStatePropertyAll(0),
+                      backgroundColor:
+                          WidgetStatePropertyAll(renkSemasi.surface),
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: renkSemasi.outline),
+                        ),
+                      ),
+                      onChanged: (deger) =>
+                          ref.read(aramaMetniProvider.notifier).state = deger,
                     ),
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color:
-                          secili ? renkSemasi.onPrimary : renkSemasi.onSurface,
+                  ),
+                  SizedBox(
+                    height: 54,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _kategoriler.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final kategori = _kategoriler[index];
+                        final secili = seciliKategori == kategori;
+                        return FilterChip(
+                          label: Text(kategori),
+                          selected: secili,
+                          showCheckmark: false,
+                          backgroundColor: renkSemasi.surface,
+                          selectedColor: renkSemasi.primary,
+                          side: BorderSide(
+                            color: secili
+                                ? renkSemasi.primary
+                                : renkSemasi.outline,
+                          ),
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: secili
+                                ? renkSemasi.onPrimary
+                                : renkSemasi.onSurface,
+                          ),
+                          onSelected: (_) => ref
+                              .read(seciliKategoriProvider.notifier)
+                              .state = kategori,
+                        );
+                      },
                     ),
-                    onSelected: (_) => ref
-                        .read(seciliKategoriProvider.notifier)
-                        .state = kategori,
-                  );
-                },
-              ),
-            ),
-                  // Tarih filtresi: Bugün / Yarın / Bu Hafta
+                  ),
                   SizedBox(
                     height: 44,
                     child: ListView.separated(
@@ -381,7 +395,6 @@ class ListeAnaSayfa extends ConsumerWidget {
                       },
                     ),
                   ),
-                  // Tamamlananları toplu temizle (varsa)
                   if (tamamlananSayisi > 0)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),

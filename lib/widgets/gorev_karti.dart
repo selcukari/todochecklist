@@ -21,12 +21,24 @@ class GorevKarti extends StatelessWidget {
     return '$gun.$ay.${tarih.year}';
   }
 
+  String _hatirlaticiFormatla(DateTime zaman) {
+    final gun = zaman.day.toString().padLeft(2, '0');
+    final ay = zaman.month.toString().padLeft(2, '0');
+    final saat = zaman.hour.toString().padLeft(2, '0');
+    final dakika = zaman.minute.toString().padLeft(2, '0');
+    return '$gun.$ay $saat:$dakika';
+  }
+
   @override
   Widget build(BuildContext context) {
     final renkSemasi = Theme.of(context).colorScheme;
     final oncelikRengi = oge.oncelik.renkGetir(renkSemasi);
     final gecikti = oge.geciktiMi && !oge.tamamlandi;
     final radius = BorderRadius.circular(16);
+
+    final tamamlananAlt =
+        oge.altGorevler.where((alt) => alt.tamamlandi).length;
+    final toplamAlt = oge.altGorevler.length;
 
     return Dismissible(
       key: ValueKey(oge.id),
@@ -49,7 +61,6 @@ class GorevKarti extends StatelessWidget {
         elevation: 0,
         clipBehavior: Clip.antiAlias,
         margin: const EdgeInsets.symmetric(vertical: 5),
-        // Tamamlanan görevler biraz soluk görünür
         color: oge.tamamlandi
             ? renkSemasi.surface.withValues(alpha: 0.6)
             : renkSemasi.surface,
@@ -67,15 +78,12 @@ class GorevKarti extends StatelessWidget {
               // Öncelik rengini gösteren sol şerit
               Container(
                 width: 5,
-                color: oge.tamamlandi
-                    ? renkSemasi.outline
-                    : oncelikRengi,
+                color: oge.tamamlandi ? renkSemasi.outline : oncelikRengi,
               ),
               Expanded(
                 child: InkWell(
                   onTap: onDuzenle,
                   child: Padding(
-                    // Altta ve üstte boşluk: içerik kesilmesin
                     padding: const EdgeInsets.fromLTRB(8, 12, 12, 14),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,6 +179,54 @@ class GorevKarti extends StatelessWidget {
                                                 : FontWeight.normal,
                                             color: gecikti
                                                 ? renkSemasi.error
+                                                : renkSemasi.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  // Hatırlatıcı Bildirim Rozeti (Varsa)
+                                  if (oge.hatirlaticiZamani != null &&
+                                      !oge.tamamlandi)
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.notifications_active_outlined,
+                                          size: 14,
+                                          color: renkSemasi.tertiary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          _hatirlaticiFormatla(
+                                              oge.hatirlaticiZamani!),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: renkSemasi.tertiary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  // Alt Görev Sayacı (Varsa)
+                                  if (toplamAlt > 0)
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.checklist_rounded,
+                                          size: 14,
+                                          color: tamamlananAlt == toplamAlt
+                                              ? renkSemasi.primary
+                                              : renkSemasi.onSurfaceVariant,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '$tamamlananAlt/$toplamAlt',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: tamamlananAlt == toplamAlt
+                                                ? renkSemasi.primary
                                                 : renkSemasi.onSurfaceVariant,
                                           ),
                                         ),
