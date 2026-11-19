@@ -31,6 +31,7 @@ class _YeniOgeEkleSheetState extends State<YeniOgeEkleSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final renkSemasi = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.only(
         left: 20,
@@ -54,10 +55,9 @@ class _YeniOgeEkleSheetState extends State<YeniOgeEkleSheet> {
             autofocus: true,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _kaydet(),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Ne alınacak veya yapılacak?',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.edit_note),
+              prefixIcon: Icon(Icons.edit_note, color: renkSemasi.primary),
             ),
           ),
           const SizedBox(height: 16),
@@ -66,9 +66,20 @@ class _YeniOgeEkleSheetState extends State<YeniOgeEkleSheet> {
           Wrap(
             spacing: 8,
             children: ['Alışveriş', 'İş', 'Kişisel'].map((kat) {
+              final secili = _seciliKategori == kat;
               return ChoiceChip(
                 label: Text(kat),
-                selected: _seciliKategori == kat,
+                selected: secili,
+                showCheckmark: false,
+                backgroundColor: renkSemasi.surface,
+                selectedColor: renkSemasi.primary,
+                side: BorderSide(
+                  color: secili ? renkSemasi.primary : renkSemasi.outline,
+                ),
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: secili ? renkSemasi.onPrimary : renkSemasi.onSurface,
+                ),
                 onSelected: (val) {
                   if (val) setState(() => _seciliKategori = kat);
                 },
@@ -79,6 +90,11 @@ class _YeniOgeEkleSheetState extends State<YeniOgeEkleSheet> {
           const Text('Öncelik', style: TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           SegmentedButton<Oncelik>(
+            style: SegmentedButton.styleFrom(
+              selectedBackgroundColor: renkSemasi.primaryContainer,
+              selectedForegroundColor: renkSemasi.onPrimaryContainer,
+              side: BorderSide(color: renkSemasi.outline),
+            ),
             segments: Oncelik.values
                 .map((o) => ButtonSegment(value: o, label: Text(o.etiket)))
                 .toList(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../utils/toast_helper.dart';
+import '../theme/app_theme.dart';
 
 class LoginSayfasi extends ConsumerStatefulWidget {
   const LoginSayfasi({super.key});
@@ -23,7 +24,7 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
         gFToastShowToast(
           context: context,
           message: 'Hoş geldiniz, ${sonuc.user!.displayName ?? sonuc.user!.email ?? ""}',
-          backgroundColor: Colors.green.shade700,
+          backgroundColor: AppColors.teal,
         );
       }
     } catch (e) {
@@ -31,7 +32,7 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
       gFToastShowToast(
         context: context,
         message: 'Google girişi başarısız: Tekrar deneyin.',
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: AppColors.coral,
       );
     } finally {
       if (mounted) {
@@ -44,8 +45,21 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
   Widget build(BuildContext context) {
     final renkSemasi = Theme.of(context).colorScheme;
 
+    final koyu = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      body: SafeArea(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: koyu
+                ? [const Color(0xFF0B3A36), AppColors.darkBg]
+                : [const Color(0xFFD6F1EB), AppColors.lightBg],
+            stops: const [0.0, 0.55],
+          ),
+        ),
+        child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -56,16 +70,32 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Uygulama İkonu
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: renkSemasi.primaryContainer,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.checklist_rounded,
-                      size: 64,
-                      color: renkSemasi.onPrimaryContainer,
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(22),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            renkSemasi.primary,
+                            Color.lerp(renkSemasi.primary, Colors.black, 0.2)!,
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: renkSemasi.primary.withValues(alpha: 0.35),
+                            blurRadius: 24,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.checklist_rounded,
+                        size: 60,
+                        color: renkSemasi.onPrimary,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -73,7 +103,9 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
                     'Akıllı Liste',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                          color: renkSemasi.onSurface,
                         ),
                   ),
                   const SizedBox(height: 8),
@@ -91,12 +123,18 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
                     onPressed: _girisYapiliyor ? null : _googleIleGiris,
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
+                      disabledBackgroundColor:
+                          renkSemasi.primary.withValues(alpha: 0.55),
+                      disabledForegroundColor: renkSemasi.onPrimary,
                     ),
                     icon: _girisYapiliyor
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: renkSemasi.onPrimary,
+                            ),
                           )
                         : const Icon(Icons.mail_outline),
                     label: Text(
@@ -113,6 +151,7 @@ class _LoginSayfasiState extends ConsumerState<LoginSayfasi> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

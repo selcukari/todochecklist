@@ -7,6 +7,7 @@ import '../widgets/ilerleme_ozet_karti.dart';
 import '../widgets/oge_form_sheet.dart';
 import '../utils/toast_helper.dart';
 import '../providers/auth_provider.dart';
+import '../theme/app_theme.dart';
 
 class ListeAnaSayfa extends ConsumerWidget {
   const ListeAnaSayfa({super.key});
@@ -36,7 +37,7 @@ class ListeAnaSayfa extends ConsumerWidget {
             gFToastShowToast(
               context: context,
               message: 'Yeni görev başarıyla kaydedildi.',
-              backgroundColor: Colors.green.shade700,
+              backgroundColor: AppColors.teal,
             );
           } else {
             notifier.guncelle(
@@ -51,7 +52,7 @@ class ListeAnaSayfa extends ConsumerWidget {
             gFToastShowToast(
               context: context,
               message: 'Değişiklikler kaydedildi.',
-              backgroundColor: Colors.green.shade700,
+              backgroundColor: AppColors.teal,
             );
           }
         },
@@ -74,6 +75,7 @@ class ListeAnaSayfa extends ConsumerWidget {
         content: Text('"${oge.baslik}" silindi'),
         action: SnackBarAction(
           label: 'Geri Al',
+          textColor: AppColors.coralLight,
           onPressed: () => notifier.geriAl(silinenIndex, oge),
         ),
       ),
@@ -102,6 +104,21 @@ class ListeAnaSayfa extends ConsumerWidget {
           FilterChip(
             label: const Text('Bekleyenler'),
             selected: sadeceBekleyenler,
+            showCheckmark: false,
+            avatar: Icon(
+              Icons.schedule,
+              size: 18,
+              color: sadeceBekleyenler
+                  ? renkSemasi.onTertiaryContainer
+                  : renkSemasi.onSurface.withValues(alpha: 0.6),
+            ),
+            selectedColor: renkSemasi.tertiaryContainer,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: sadeceBekleyenler
+                  ? renkSemasi.onTertiaryContainer
+                  : renkSemasi.onSurface,
+            ),
             onSelected: (val) =>
                 ref.read(sadeceTamamlanmayanlarProvider.notifier).state = val,
           ),
@@ -123,7 +140,7 @@ class ListeAnaSayfa extends ConsumerWidget {
                 child: Row(
                   children: [
                     Icon(
-                      secili ? Icons.check : Icons.radio_button_unchecked,
+                      secili ? Icons.check_circle : Icons.circle_outlined,
                       size: 18,
                       color: secili ? renkSemasi.primary : renkSemasi.outline,
                     ),
@@ -143,68 +160,82 @@ class ListeAnaSayfa extends ConsumerWidget {
           ),
           const SizedBox(width: 4),
           IconButton(
-  tooltip: kullanici?.email ?? 'Hesap',
-  onPressed: () {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(kullanici?.displayName ?? 'Kullanıcı'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.email_outlined, size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    kullanici?.email ?? 'Gmail bilgisi bulunamadı',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+            tooltip: kullanici?.email ?? 'Hesap',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(kullanici?.displayName ?? 'Kullanıcı'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.email_outlined,
+                              size: 18, color: renkSemasi.primary),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              kullanici?.email ?? 'Gmail bilgisi bulunamadı',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Kapat'),
+                    ),
+                    FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 44),
+                      ),
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        await ref.read(authServisiProvider).cikisYap();
+                      },
+                      icon: const Icon(Icons.logout),
+                      label: const Text('Çıkış Yap'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Kapat', style: TextStyle(color: Colors.red)),
-          ),
-          FilledButton.icon(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await ref.read(authServisiProvider).cikisYap();
+              );
             },
-            icon: const Icon(Icons.logout),
-            label: const Text('Çıkış Yap'),
+            icon: CircleAvatar(
+              radius: 16,
+              backgroundColor: renkSemasi.primaryContainer,
+              foregroundColor: renkSemasi.onPrimaryContainer,
+              backgroundImage: kullanici?.photoURL != null
+                  ? NetworkImage(kullanici!.photoURL!)
+                  : null,
+              child: kullanici?.photoURL == null
+                  ? Text(
+                      (kullanici?.email?.isNotEmpty == true)
+                          ? kullanici!.email![0].toUpperCase()
+                          : '?',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    )
+                  : null,
+            ),
           ),
-        ],
-      ),
-    );
-  },
-  icon: CircleAvatar(
-    radius: 16,
-    backgroundImage: kullanici?.photoURL != null
-        ? NetworkImage(kullanici!.photoURL!)
-        : null,
-    child: kullanici?.photoURL == null
-        ? Text(
-            (kullanici?.email?.isNotEmpty == true)
-                ? kullanici!.email![0].toUpperCase()
-                : '?',
-          )
-        : null,
-  ),
-),
+          const SizedBox(width: 8),
         ],
       ),
       body: filtrelenmisAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (hata, _) => Center(child: Text('Veriler yüklenemedi: $hata')),
-        data: (gosterilecekListe) => Column(
-          children: [
+        data: (gosterilecekListe) => CustomScrollView(
+          // Klavye açıkken de taşma olmaz; kaydırınca klavye kapanır
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
             IlerlemeOzetKarti(
               tamamlananSayisi: tamamlananSayisi,
               toplamSayi: tumOgeler.length,
@@ -213,27 +244,44 @@ class ListeAnaSayfa extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: SearchBar(
                 hintText: 'Görev veya ürün ara...',
-                leading: const Icon(Icons.search),
+                leading: Icon(Icons.search, color: renkSemasi.primary),
                 elevation: const WidgetStatePropertyAll(0),
-                backgroundColor: WidgetStatePropertyAll(
-                  renkSemasi.surfaceContainerHighest.withValues(alpha: 0.5),
+                backgroundColor: WidgetStatePropertyAll(renkSemasi.surface),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(color: renkSemasi.outline),
+                  ),
                 ),
                 onChanged: (deger) =>
                     ref.read(aramaMetniProvider.notifier).state = deger,
               ),
             ),
             SizedBox(
-              height: 50,
+              height: 54,
               child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 scrollDirection: Axis.horizontal,
                 itemCount: _kategoriler.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final kategori = _kategoriler[index];
+                  final secili = seciliKategori == kategori;
                   return FilterChip(
                     label: Text(kategori),
-                    selected: seciliKategori == kategori,
+                    selected: secili,
+                    showCheckmark: false,
+                    backgroundColor: renkSemasi.surface,
+                    selectedColor: renkSemasi.primary,
+                    side: BorderSide(
+                      color: secili ? renkSemasi.primary : renkSemasi.outline,
+                    ),
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color:
+                          secili ? renkSemasi.onPrimary : renkSemasi.onSurface,
+                    ),
                     onSelected: (_) => ref
                         .read(seciliKategoriProvider.notifier)
                         .state = kategori,
@@ -241,42 +289,75 @@ class ListeAnaSayfa extends ConsumerWidget {
                 },
               ),
             ),
-            Expanded(
-              child: gosterilecekListe.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.checklist_rtl,
-                              size: 64, color: renkSemasi.outline),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Listede gösterilecek öğe yok',
-                            style: TextStyle(color: renkSemasi.outline),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-                      itemCount: gosterilecekListe.length,
-                      itemBuilder: (context, index) {
-                        final oge = gosterilecekListe[index];
-                        return GorevKarti(
-                          oge: oge,
-                          onDurumDegisti: (yeniDurum) => ref
-                              .read(gorevlerProvider.notifier)
-                              .durumDegistir(oge.id, yeniDurum),
-                          onDuzenle: () => _formPenceresiniAc(
-                            context,
-                            ref,
-                            mevcutOge: oge,
-                          ),
-                          onSilindi: () => _ogeSil(context, ref, oge),
-                        );
-                      },
-                    ),
+                ],
+              ),
             ),
+            if (gosterilecekListe.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 80),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 96,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            color: renkSemasi.primaryContainer,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.checklist_rtl,
+                            size: 44,
+                            color: renkSemasi.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Listede gösterilecek öğe yok',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: renkSemasi.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Yeni Ekle ile ilk görevini oluştur',
+                          style: TextStyle(
+                            color:
+                                renkSemasi.onSurface.withValues(alpha: 0.55),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+                sliver: SliverList.builder(
+                  itemCount: gosterilecekListe.length,
+                  itemBuilder: (context, index) {
+                    final oge = gosterilecekListe[index];
+                    return GorevKarti(
+                      oge: oge,
+                      onDurumDegisti: (yeniDurum) => ref
+                          .read(gorevlerProvider.notifier)
+                          .durumDegistir(oge.id, yeniDurum),
+                      onDuzenle: () => _formPenceresiniAc(
+                        context,
+                        ref,
+                        mevcutOge: oge,
+                      ),
+                      onSilindi: () => _ogeSil(context, ref, oge),
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),

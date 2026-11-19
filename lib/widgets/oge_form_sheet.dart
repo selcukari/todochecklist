@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/gorev_ogesi.dart';
 import '../utils/toast_helper.dart';
+import '../theme/app_theme.dart';
 
 class OgeFormSheet extends StatefulWidget {
   final GorevOgesi? mevcutOge;
@@ -82,7 +83,8 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
     final cikilsinMi = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        icon: const Icon(Icons.warning_amber_rounded),
+        icon: Icon(Icons.warning_amber_rounded,
+            color: Theme.of(context).colorScheme.tertiary),
         title: const Text('Kaydedilmemiş Değişiklikler'),
         content: const Text(
           'Yaptığınız değişiklikler henüz kaydedilmedi. Kaydetmeden çıkmak istediğinize emin misiniz?',
@@ -135,7 +137,7 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
       gFToastShowToast(
         context: context,
         message: 'Lütfen bir başlık girin.',
-        backgroundColor: Colors.orange.shade800,
+        backgroundColor: AppColors.coral,
       );
       return;
     }
@@ -202,10 +204,10 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                         autofocus: !_duzenlemeModu,
                         textInputAction: TextInputAction.done,
                         onSubmitted: (_) => _formuTamamla(),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Ne alınacak veya yapılacak?',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.edit_note),
+                          prefixIcon:
+                              Icon(Icons.edit_note, color: renkSemasi.primary),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -215,9 +217,24 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                       Wrap(
                         spacing: 8,
                         children: ['Alışveriş', 'İş', 'Kişisel'].map((kat) {
+                          final secili = _seciliKategori == kat;
                           return ChoiceChip(
                             label: Text(kat),
-                            selected: _seciliKategori == kat,
+                            selected: secili,
+                            showCheckmark: false,
+                            backgroundColor: renkSemasi.surface,
+                            selectedColor: renkSemasi.primary,
+                            side: BorderSide(
+                              color: secili
+                                  ? renkSemasi.primary
+                                  : renkSemasi.outline,
+                            ),
+                            labelStyle: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: secili
+                                  ? renkSemasi.onPrimary
+                                  : renkSemasi.onSurface,
+                            ),
                             onSelected: (val) {
                               if (val) setState(() => _seciliKategori = kat);
                             },
@@ -229,6 +246,12 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                           style: TextStyle(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
                       SegmentedButton<Oncelik>(
+                        style: SegmentedButton.styleFrom(
+                          selectedBackgroundColor: renkSemasi.primaryContainer,
+                          selectedForegroundColor:
+                              renkSemasi.onPrimaryContainer,
+                          side: BorderSide(color: renkSemasi.outline),
+                        ),
                         segments: Oncelik.values
                             .map((o) =>
                                 ButtonSegment(value: o,
@@ -285,7 +308,7 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                             Navigator.pop(context);
                           }
                         },
-                        icon: const Icon(Icons.close, color: Color.fromARGB(255, 255, 17, 0)),
+                        icon: const Icon(Icons.close),
                         label: const Text('İptal'),
                       ),
                     ),
