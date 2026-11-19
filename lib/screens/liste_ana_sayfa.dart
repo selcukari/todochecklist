@@ -4,6 +4,7 @@ import '../models/gorev_ogesi.dart';
 import '../providers/gorev_provider.dart';
 import '../widgets/gorev_karti.dart';
 import '../widgets/ilerleme_ozet_karti.dart';
+import '../widgets/hizli_ekle_alani.dart';
 import '../widgets/oge_form_sheet.dart';
 import '../utils/toast_helper.dart';
 import '../providers/auth_provider.dart';
@@ -82,6 +83,40 @@ class ListeAnaSayfa extends ConsumerWidget {
     );
   }
 
+  Future<void> _tamamlananlariTemizle(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final notifier = ref.read(gorevlerProvider.notifier);
+    final silinenler = await notifier.tamamlananlariTemizle();
+    if (!context.mounted || silinenler.isEmpty) return;
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${silinenler.length} tamamlanan görev silindi'),
+        action: SnackBarAction(
+          label: 'Geri Al',
+          textColor: AppColors.coralLight,
+          onPressed: () => notifier.geriAlToplu(silinenler),
+        ),
+      ),
+    );
+  }
+
+  IconData _tarihIkonu(TarihFiltresi filtre) {
+    switch (filtre) {
+      case TarihFiltresi.hepsi:
+        return Icons.all_inclusive;
+      case TarihFiltresi.bugun:
+        return Icons.today_outlined;
+      case TarihFiltresi.yarin:
+        return Icons.event_outlined;
+      case TarihFiltresi.buHafta:
+        return Icons.date_range_outlined;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final renkSemasi = Theme.of(context).colorScheme;
@@ -93,6 +128,7 @@ class ListeAnaSayfa extends ConsumerWidget {
     final seciliKategori = ref.watch(seciliKategoriProvider);
     final sadeceBekleyenler = ref.watch(sadeceTamamlanmayanlarProvider);
     final siralamaKriteri = ref.watch(siralamaKriteriProvider);
+    final tarihFiltresi = ref.watch(tarihFiltresiProvider);
 
     final tumOgeler = tumGorevlerAsync.valueOrNull ?? [];
     final tamamlananSayisi = tumOgeler.where((e) => e.tamamlandi).length;
@@ -240,6 +276,19 @@ class ListeAnaSayfa extends ConsumerWidget {
               tamamlananSayisi: tamamlananSayisi,
               toplamSayi: tumOgeler.length,
             ),
+            HizliEkleAlani(
+              onEkle: (baslik) {
+                // Seçili kategori 'Tümü' ise varsayılan kategori kullanılır
+                final kategori =
+                    seciliKategori == 'Tümü' ? 'Alışveriş' : seciliKategori;
+                ref.read(gorevlerProvider.notifier).ekle(
+                      baslik: baslik,
+                      kategori: kategori,
+                      oncelik: Oncelik.orta,
+                      sonTarih: null,
+                    );
+              },
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: SearchBar(
@@ -289,6 +338,65 @@ class ListeAnaSayfa extends ConsumerWidget {
                 },
               ),
             ),
+                  // Tarih filtresi: Bugün / Yarın / Bu Hafta
+                  SizedBox(
+                    height: 44,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: TarihFiltresi.values.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final filtre = TarihFiltresi.values[index];
+                        final secili = tarihFiltresi == filtre;
+                        return FilterChip(
+                          avatar: Icon(
+                            _tarihIkonu(filtre),
+                            size: 16,
+                            color: secili
+                                ? renkSemasi.onPrimaryContainer
+                                : renkSemasi.onSurface.withValues(alpha: 0.6),
+                          ),
+                          label: Text(filtre.etiket),
+                          selected: secili,
+                          showCheckmark: false,
+                          backgroundColor: renkSemasi.surface,
+                          selectedColor: renkSemasi.primaryContainer,
+                          side: BorderSide(
+                            color: secili
+                                ? renkSemasi.primary
+                                : renkSemasi.outline,
+                          ),
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: secili
+                                ? renkSemasi.onPrimaryContainer
+                                : renkSemasi.onSurface,
+                          ),
+                          onSelected: (_) => ref
+                              .read(tarihFiltresiProvider.notifier)
+                              .state = filtre,
+                        );
+                      },
+                    ),
+                  ),
+                  // Tamamlananları toplu temizle (varsa)
+                  if (tamamlananSayisi > 0)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: () =>
+                              _tamamlananlariTemizle(context, ref),
+                          icon: const Icon(Icons.cleaning_services_outlined,
+                              size: 18),
+                          label:
+                              Text('Tamamlananları temizle ($tamamlananSayisi)'),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

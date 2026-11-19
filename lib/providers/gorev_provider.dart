@@ -9,6 +9,45 @@ final depolamaServisiProvider = Provider<DepolamaServisi>((ref) {
 });
 
 // 2. Filtre ve Sıralama State Sağlayıcıları
+enum TarihFiltresi {
+  hepsi('Tüm Tarihler'),
+  bugun('Bugün'),
+  yarin('Yarın'),
+  buHafta('Bu Hafta');
+
+  final String etiket;
+  const TarihFiltresi(this.etiket);
+}
+
+/// Görevin son tarihinin seçili tarih filtresine uyup uymadığını kontrol eder.
+/// 'Bu Hafta': bugünden başlayıp bu haftanın pazarına kadar (pazar dahil).
+bool _tarihFiltresineUyuyor(DateTime? sonTarih, TarihFiltresi filtre) {
+  if (filtre == TarihFiltresi.hepsi) return true;
+  if (sonTarih == null) return false;
+
+  final simdi = DateTime.now();
+  final bugun = DateTime(simdi.year, simdi.month, simdi.day);
+  final gun = DateTime(sonTarih.year, sonTarih.month, sonTarih.day);
+
+  switch (filtre) {
+    case TarihFiltresi.hepsi:
+      return true;
+    case TarihFiltresi.bugun:
+      return gun == bugun;
+    case TarihFiltresi.yarin:
+      return gun == DateTime(bugun.year, bugun.month, bugun.day + 1);
+    case TarihFiltresi.buHafta:
+      final haftaSonu = DateTime(
+        bugun.year,
+        bugun.month,
+        bugun.day + (DateTime.sunday - bugun.weekday),
+      );
+      return !gun.isBefore(bugun) && !gun.isAfter(haftaSonu);
+  }
+}
+
+final tarihFiltresiProvider =
+    StateProvider<TarihFiltresi>((ref) => TarihFiltresi.hepsi);
 final seciliKategoriProvider = StateProvider<String>((ref) => 'Tümü');
 final aramaMetniProvider = StateProvider<String>((ref) => '');
 final sadeceTamamlanmayanlarProvider = StateProvider<bool>((ref) => false);
@@ -78,6 +117,33 @@ class GorevlerNotifier extends AsyncNotifier<List<GorevOgesi>> {
     return index;
   }
 
+  /// Tamamlanan tüm görevleri siler. Geri almak için silinenleri
+  /// (eski sıra numarasıyla birlikte) döndürür.
+  Future<List<MapEntry<int, GorevOgesi>>> tamamlananlariTemizle() async {
+    final mevcut = state.valueOrNull ?? <GorevOgesi>[];
+    final silinenler = <MapEntry<int, GorevOgesi>>[];
+    for (var i = 0; i < mevcut.length; i++) {
+      if (mevcut[i].tamamlandi) silinenler.add(MapEntry(i, mevcut[i]));
+    }
+    if (silinenler.isEmpty) return silinenler;
+
+    await _kaydet([
+      for (final oge in mevcut)
+        if (!oge.tamamlandi) oge,
+    ]);
+    return silinenler;
+  }
+
+  /// 'tamamlananlariTemizle' ile silinenleri eski yerlerine geri koyar.
+  Future<void> geriAlToplu(List<MapEntry<int, GorevOgesi>> silinenler) async {
+    final mevcut = [...(state.valueOrNull ?? <GorevOgesi>[])];
+    for (final giris in silinenler) {
+      final guvenliIndex = giris.key.clamp(0, mevcut.length);
+      mevcut.insert(guvenliIndex, giris.value);
+    }
+    await _kaydet(mevcut);
+  }
+
   Future<void> geriAl(int index, GorevOgesi oge) async {
     final List<GorevOgesi> mevcut = [...(state.valueOrNull ?? <GorevOgesi>[])];
     final guvenliIndex = index.clamp(0, mevcut.length);
@@ -98,6 +164,7 @@ final filtrelenmisGorevlerProvider = Provider<AsyncValue<List<GorevOgesi>>>((ref
   final aramaMetni = ref.watch(aramaMetniProvider).toLowerCase();
   final sadeceBekleyenler = ref.watch(sadeceTamamlanmayanlarProvider);
   final siralamaKriteri = ref.watch(siralamaKriteriProvider);
+  final tarihFiltresi = ref.watch(tarihFiltresiProvider);
 
   return gorevlerAsync.whenData((ogeler) {
     final sonuc = ogeler.where((oge) {
@@ -105,7 +172,8 @@ final filtrelenmisGorevlerProvider = Provider<AsyncValue<List<GorevOgesi>>>((ref
           seciliKategori == 'Tümü' || oge.kategori == seciliKategori;
       final aramaUyumu = oge.baslik.toLowerCase().contains(aramaMetni);
       final durumUyumu = !sadeceBekleyenler || !oge.tamamlandi;
-      return kategoriUyumu && aramaUyumu && durumUyumu;
+      final tarihUyumu = _tarihFiltresineUyuyor(oge.sonTarih, tarihFiltresi);
+      return kategoriUyumu && aramaUyumu && durumUyumu && tarihUyumu;
     }).toList();
 
     switch (siralamaKriteri) {
