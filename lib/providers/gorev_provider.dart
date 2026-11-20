@@ -192,6 +192,18 @@ class GorevlerNotifier extends AsyncNotifier<List<GorevOgesi>> {
     await _kaydet(mevcut);
     _bildirimSenkronizeEtArkaPlanda(oge);
   }
+  Future<void> yenidenSirala(int eskiIndex, int yeniIndex) async {
+    final liste = [...(state.valueOrNull ?? <GorevOgesi>[])];
+    if (eskiIndex < 0 || eskiIndex >= liste.length) return;
+
+    if (yeniIndex > eskiIndex) yeniIndex -= 1; // Flutter'ın index kuralı
+    yeniIndex = yeniIndex.clamp(0, liste.length - 1);
+    if (yeniIndex == eskiIndex) return;
+
+    final oge = liste.removeAt(eskiIndex);
+    liste.insert(yeniIndex, oge);
+    await _kaydet(liste);
+  }
 }
 
 final gorevlerProvider =

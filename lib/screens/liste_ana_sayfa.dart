@@ -133,6 +133,8 @@ class ListeAnaSayfa extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final renkSemasi = Theme.of(context).colorScheme;
 
+    final aramaMetni = ref.watch(aramaMetniProvider);
+
     final kullanici = ref.watch(authStateProvider).valueOrNull;
 
     final tumGorevlerAsync = ref.watch(gorevlerProvider);
@@ -144,6 +146,12 @@ class ListeAnaSayfa extends ConsumerWidget {
 
     final tumOgeler = tumGorevlerAsync.valueOrNull ?? [];
     final tamamlananSayisi = tumOgeler.where((e) => e.tamamlandi).length;
+
+    final siralamaAktif = siralamaKriteri == SiralamaKriteri.eklenmeSirasi &&
+      seciliKategori == 'Tümü' &&
+      tarihFiltresi == TarihFiltresi.hepsi &&
+      !sadeceBekleyenler &&
+      aramaMetni.isEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -459,26 +467,43 @@ class ListeAnaSayfa extends ConsumerWidget {
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-                sliver: SliverList.builder(
-                  itemCount: gosterilecekListe.length,
-                  itemBuilder: (context, index) {
-                    final oge = gosterilecekListe[index];
-                    return GorevKarti(
-                      oge: oge,
-                      onDurumDegisti: (yeniDurum) => ref
-                          .read(gorevlerProvider.notifier)
-                          .durumDegistir(oge.id, yeniDurum),
-                      onDuzenle: () => _formPenceresiniAc(
-                        context,
-                        ref,
-                        mevcutOge: oge,
-                      ),
-                      onSilindi: () => _ogeSil(context, ref, oge),
-                    );
-                  },
-                ),
-              ),
+  padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+  sliver: SliverReorderableList(
+    itemCount: gosterilecekListe.length,
+    onReorder: (eskiIndex, yeniIndex) {
+      if (!siralamaAktif) return;
+      ref
+          .read(gorevlerProvider.notifier)
+          .yenidenSirala(eskiIndex, yeniIndex);
+    },
+    proxyDecorator: (child, index, animation) => Material(
+      color: Colors.transparent,
+      elevation: 6,
+      borderRadius: BorderRadius.circular(16),
+      child: child,
+    ),
+    itemBuilder: (context, index) {
+      final oge = gosterilecekListe[index];
+      return ReorderableDelayedDragStartListener(
+        key: ValueKey(oge.id), // key şart
+        index: index,
+        enabled: siralamaAktif,
+        child: GorevKarti(
+          oge: oge,
+          onDurumDegisti: (yeniDurum) => ref
+              .read(gorevlerProvider.notifier)
+              .durumDegistir(oge.id, yeniDurum),
+          onDuzenle: () => _formPenceresiniAc(
+            context,
+            ref,
+            mevcutOge: oge,
+          ),
+          onSilindi: () => _ogeSil(context, ref, oge),
+        ),
+      );
+    },
+  ),
+),
           ],
         ),
       ),

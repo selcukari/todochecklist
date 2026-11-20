@@ -33,8 +33,6 @@ class BildirimServisi {
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-    print('BildirimServisi başlatılıyor7...');
-
 
     await _plugin.initialize(
       const InitializationSettings(
@@ -42,7 +40,6 @@ class BildirimServisi {
         iOS: iosAyarlari,
       ),
     );
-    print('BildirimServisi başlatılıyor8...');
 
     _hazir = true;
   }
