@@ -6,6 +6,8 @@ import '../widgets/gorev_karti.dart';
 import '../widgets/ilerleme_ozet_karti.dart';
 import '../widgets/hizli_ekle_alani.dart';
 import '../widgets/oge_form_sheet.dart';
+import '../widgets/animasyonlu_arka_plan.dart';
+import '../widgets/konfeti_katmani.dart';
 import '../utils/toast_helper.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
@@ -289,7 +291,10 @@ class ListeAnaSayfa extends ConsumerWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: Column(
+      body: Stack(
+        children: [
+          const Positioned.fill(child: AnimasyonluArkaPlan()),
+          Column(
         children: [
           Expanded(
             child: filtrelenmisAsync.when(
@@ -500,9 +505,16 @@ class ListeAnaSayfa extends ConsumerWidget {
                             enabled: siralamaAktif,
                             child: GorevKarti(
                               oge: oge,
-                              onDurumDegisti: (yeniDurum) => ref
-                                  .read(gorevlerProvider.notifier)
-                                  .durumDegistir(oge.id, yeniDurum),
+                              onDurumDegisti: (yeniDurum) {
+                                ref
+                                    .read(gorevlerProvider.notifier)
+                                    .durumDegistir(oge.id, yeniDurum);
+                                if (yeniDurum == true) {
+                                  ref
+                                      .read(konfetiTetikleyiciProvider.notifier)
+                                      .state++;
+                                }
+                              },
                               onDuzenle: () => _formPenceresiniAc(
                                 context,
                                 ref,
@@ -525,6 +537,9 @@ class ListeAnaSayfa extends ConsumerWidget {
               child: BannerAdWidget(),
             ),
           ),
+        ],
+      ),
+          const Positioned.fill(child: KonfetiKatmani()),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

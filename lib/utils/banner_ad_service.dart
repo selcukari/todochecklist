@@ -18,7 +18,6 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   @override
   void initState() {
     super.initState();
-  debugPrint('Banner adUnitId: "$_adUnitId"');
 
     _loadAd();
   }

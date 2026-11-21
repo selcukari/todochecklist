@@ -21,7 +21,6 @@ class InterstitialAdService {
     if (_ad != null || _yukleniyor) return;
 
     final id = dotenv.env['Android_GecisId'] ?? '';;
-    debugPrint('Interstitial adUnitId: "$id"');
     if (id.isEmpty) return;
 
     _yukleniyor = true;

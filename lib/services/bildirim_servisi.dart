@@ -108,9 +108,7 @@ class BildirimServisi {
         _bildirimDetaylari(),
         androidScheduleMode: alarmModu,
       );
-      debugPrint(
-        'Bildirim zamanlandı: $tzZamani (id: ${_bildirimIdUret(gorevId)}, mod: $alarmModu)',
-      );
+   
     } catch (e) {
       debugPrint('Bildirim zamanlama hatası: $e');
     }
