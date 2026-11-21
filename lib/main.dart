@@ -10,11 +10,13 @@ import 'screens/liste_ana_sayfa.dart';
 import 'screens/login_sayfa.dart';
 import 'services/bildirim_servisi.dart';
 import 'theme/app_theme.dart';
+import 'utils/interstitial_ad_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   await MobileAds.instance.initialize();
+  InterstitialAdService.instance.yukle();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

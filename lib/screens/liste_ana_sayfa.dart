@@ -10,6 +10,7 @@ import '../utils/toast_helper.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/banner_ad_service.dart';
+import '../utils/interstitial_ad_service.dart';
 
 class ListeAnaSayfa extends ConsumerWidget {
   const ListeAnaSayfa({super.key});
@@ -50,6 +51,11 @@ class ListeAnaSayfa extends ConsumerWidget {
               message: 'Yeni görev başarıyla kaydedildi.',
               backgroundColor: AppColors.teal,
             );
+            // geciş Reklamı şimdilik kapat canlıya alınınca ac
+            // Future.delayed(
+            //   const Duration(milliseconds: 600),
+            //   InterstitialAdService.instance.eylemSonrasiGoster,
+            // );
           } else {
             notifier.guncelle(
               mevcutOge.copyWith(
