@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.todochecklist"
+    namespace = "com.selcukari.todochecklist"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.todochecklist"
+        applicationId = "com.selcukari.todochecklist"
         minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
