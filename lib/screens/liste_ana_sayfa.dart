@@ -8,6 +8,7 @@ import '../widgets/hizli_ekle_alani.dart';
 import '../widgets/oge_form_sheet.dart';
 import '../widgets/animasyonlu_arka_plan.dart';
 import '../widgets/konfeti_katmani.dart';
+import '../services/anaekran_widget_servisi.dart';
 import '../utils/toast_helper.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
@@ -149,6 +150,9 @@ class ListeAnaSayfa extends ConsumerWidget {
     final kullanici = ref.watch(authStateProvider).valueOrNull;
 
     final tumGorevlerAsync = ref.watch(gorevlerProvider);
+
+    // Görev listesi değiştikçe ana ekran widget'ını günceller
+    ref.watch(anaEkranWidgetSenkronProvider);
     final filtrelenmisAsync = ref.watch(filtrelenmisGorevlerProvider);
     final seciliKategori = ref.watch(seciliKategoriProvider);
     final sadeceBekleyenler = ref.watch(sadeceTamamlanmayanlarProvider);
