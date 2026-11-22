@@ -44,7 +44,7 @@ bool _tarihFiltresineUyuyor(DateTime? sonTarih, TarihFiltresi filtre) {
       final haftaSonu = DateTime(
         bugun.year,
         bugun.month,
-        bugun.day + (DateTime.sunday - bugun.weekday),
+        bugun.day + 6,
       );
       return !gun.isBefore(bugun) && !gun.isAfter(haftaSonu);
   }

@@ -384,8 +384,8 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                             child: OutlinedButton.icon(
                               onPressed: _hatirlaticiSec,
                               icon: const Icon(
-                                  Icons.notifications_active_outlined,
-                                  size: 18),
+                                Icons.notifications_active_outlined,
+                                size: 18, color: Colors.orange,),
                               label: Text(
                                 _seciliHatirlatici == null
                                     ? 'Hatırlatıcı Ekle (İsteğe Bağlı)'
@@ -494,7 +494,7 @@ class _OgeFormSheetState extends State<OgeFormSheet> {
                             Navigator.pop(context);
                           }
                         },
-                        icon: const Icon(Icons.close),
+                        icon: const Icon(Icons.close, color: Colors.red,),
                         label: const Text('İptal'),
                       ),
                     ),
