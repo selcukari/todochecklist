@@ -94,10 +94,12 @@ class ListeAnaSayfa extends ConsumerWidget {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('"${oge.baslik}" silindi'),
+        content: Text(
+          '${oge.baslik} silindi', maxLines: 2,
+          overflow: TextOverflow.ellipsis),
         action: SnackBarAction(
           label: 'Geri Al',
-          textColor: AppColors.coralLight,
+          textColor: const Color.fromARGB(255, 255, 55, 0),
           onPressed: () => notifier.geriAl(silinenIndex, oge),
         ),
       ),
