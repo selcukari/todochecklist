@@ -99,7 +99,7 @@ class ListeAnaSayfa extends ConsumerWidget {
           overflow: TextOverflow.ellipsis),
         action: SnackBarAction(
           label: 'Geri Al',
-          textColor: const Color.fromARGB(255, 255, 55, 0),
+          textColor: AppColors.coralLight,
           onPressed: () => notifier.geriAl(silinenIndex, oge),
         ),
       ),
