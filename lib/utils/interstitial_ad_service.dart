@@ -20,7 +20,7 @@ class InterstitialAdService {
   void yukle() {
     if (_ad != null || _yukleniyor) return;
 
-    final id = dotenv.env['Android_GecisId'] ?? '';;
+    final id = dotenv.env['Android_GecisId'] ?? '';
     if (id.isEmpty) return;
 
     _yukleniyor = true;
