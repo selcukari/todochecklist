@@ -52,13 +52,13 @@ class ListeAnaSayfa extends ConsumerWidget {
             gFToastShowToast(
               context: context,
               message: 'Yeni görev başarıyla kaydedildi.',
-              backgroundColor: AppColors.teal,
+              backgroundColor: AppColors.coral
             );
             // geciş Reklamı şimdilik kapat canlıya alınınca ac
-            // Future.delayed(
-            //   const Duration(milliseconds: 600),
-            //   InterstitialAdService.instance.eylemSonrasiGoster,
-            // );
+             Future.delayed(
+               const Duration(milliseconds: 600),
+               InterstitialAdService.instance.eylemSonrasiGoster,
+             );
           } else {
             notifier.guncelle(
               mevcutOge.copyWith(
@@ -75,7 +75,7 @@ class ListeAnaSayfa extends ConsumerWidget {
             gFToastShowToast(
               context: context,
               message: 'Değişiklikler kaydedildi.',
-              backgroundColor: AppColors.teal,
+              backgroundColor: AppColors.coral,
             );
           }
         },
