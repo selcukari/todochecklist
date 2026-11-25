@@ -60,14 +60,9 @@ class GorevKarti extends StatelessWidget {
         elevation: 0,
         clipBehavior: Clip.antiAlias,
         margin: const EdgeInsets.symmetric(vertical: 5),
-        color: oge.tamamlandi
-            ? renkSemasi.surface.withValues(alpha: 0.6)
-            : renkSemasi.surface,
+        color: oge.tamamlandi ? renkSemasi.surface.withValues(alpha: 0.6) : renkSemasi.surface,
         shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: gecikti ? renkSemasi.error : renkSemasi.outline,
-            width: gecikti ? 1.2 : 1,
-          ),
+          side: BorderSide(color: gecikti ? renkSemasi.error : renkSemasi.outline, width: gecikti ? 1.2 : 1),
           borderRadius: radius,
         ),
         child: IntrinsicHeight(
@@ -75,10 +70,7 @@ class GorevKarti extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Öncelik rengini gösteren sol şerit
-              Container(
-                width: 5,
-                color: oge.tamamlandi ? renkSemasi.outline : oncelikRengi,
-              ),
+              Container(width: 5, color: oge.tamamlandi ? renkSemasi.outline : oncelikRengi),
               Expanded(
                 child: InkWell(
                   onTap: onDuzenle,
@@ -95,9 +87,7 @@ class GorevKarti extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
-                                child: Text(
-                                  oge.baslik,
-                                  maxLines: 1,
+                                child: Text(oge.baslik, maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: false,
                                   style: TextStyle(
@@ -110,9 +100,7 @@ class GorevKarti extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Wrap(
-                                spacing: 10,
-                                runSpacing: 6,
-                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 10, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   // Kategori Bilgisi
                                   Row(
@@ -142,15 +130,8 @@ class GorevKarti extends StatelessWidget {
                                           size: 14, color: gecikti ? renkSemasi.error : renkSemasi.primary),
                                         const SizedBox(width: 4),
                                         Text(
-                                          _tarihFormatla(oge.sonTarih!),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: gecikti
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                            color: gecikti
-                                                ? renkSemasi.error
-                                                : renkSemasi.onSurfaceVariant,
+                                          _tarihFormatla(oge.sonTarih!), style: TextStyle(fontSize: 12,  fontWeight: gecikti ? FontWeight.bold : FontWeight.normal,
+                                            color: gecikti ? renkSemasi.error : renkSemasi.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -161,20 +142,11 @@ class GorevKarti extends StatelessWidget {
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          Icons.notifications_active_outlined,
-                                          size: 14,
-                                          color: renkSemasi.tertiary,
-                                        ),
+                                        Icon(Icons.notifications_active_outlined, size: 14, color: renkSemasi.tertiary),
                                         const SizedBox(width: 4),
                                         Text(
-                                          _hatirlaticiFormatla(
-                                              oge.hatirlaticiZamani!),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: renkSemasi.tertiary,
-                                          ),
+                                          _hatirlaticiFormatla(oge.hatirlaticiZamani!),
+                                          style: TextStyle( fontSize: 12, fontWeight: FontWeight.w500, color: renkSemasi.tertiary),
                                         ),
                                       ],
                                     ),
@@ -184,21 +156,12 @@ class GorevKarti extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(
-                                          Icons.checklist_rounded,
-                                          size: 14,
-                                          color: tamamlananAlt == toplamAlt
-                                              ? renkSemasi.primary
-                                              : renkSemasi.onSurfaceVariant,
+                                          Icons.checklist_rounded, size: 14, color: tamamlananAlt == toplamAlt ? renkSemasi.primary : renkSemasi.onSurfaceVariant,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           '$tamamlananAlt/$toplamAlt',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: tamamlananAlt == toplamAlt
-                                                ? renkSemasi.primary
-                                                : renkSemasi.onSurfaceVariant,
+                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tamamlananAlt == toplamAlt ? renkSemasi.primary : renkSemasi.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -209,13 +172,7 @@ class GorevKarti extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Icon(
-                            Icons.chevron_right,
-                            size: 20,
-                            color: renkSemasi.outline,
-                          ),
+                        Padding(padding: const EdgeInsets.only(top: 10), child: Icon(Icons.chevron_right, size: 20, color: renkSemasi.outline),
                         ),
                       ],
                     ),
