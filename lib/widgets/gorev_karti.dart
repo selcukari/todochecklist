@@ -87,10 +87,7 @@ class GorevKarti extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Checkbox(
-                          value: oge.tamamlandi,
-                          onChanged: (val) => onDurumDegisti(val ?? false),
-                        ),
+                        Checkbox(value: oge.tamamlandi, onChanged: (val) => onDurumDegisti(val ?? false)),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Column(
@@ -106,13 +103,8 @@ class GorevKarti extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    decoration: oge.tamamlandi
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                    color: oge.tamamlandi
-                                        ? renkSemasi.onSurface
-                                            .withValues(alpha: 0.45)
-                                        : renkSemasi.onSurface,
+                                    decoration: oge.tamamlandi ? TextDecoration.lineThrough : null,
+                                    color: oge.tamamlandi ? renkSemasi.onSurface.withValues(alpha: 0.45) : renkSemasi.onSurface,
                                   ),
                                 ),
                               ),
@@ -135,18 +127,10 @@ class GorevKarti extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          oncelikRengi.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
+                                    decoration: BoxDecoration(color: oncelikRengi.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
                                     child: Text(
                                       oge.oncelik.etiket,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w700,
-                                        color: oncelikRengi,
-                                      ),
+                                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: oncelikRengi),
                                     ),
                                   ),
                                   // Son Teslim Tarihi Rozeti (Varsa)
