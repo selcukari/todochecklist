@@ -138,15 +138,8 @@ class GorevKarti extends StatelessWidget {
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          gecikti
-                                              ? Icons.warning_amber_rounded
-                                              : Icons.event_outlined,
-                                          size: 14,
-                                          color: gecikti
-                                              ? renkSemasi.error
-                                              : renkSemasi.primary,
-                                        ),
+                                        Icon(gecikti ? Icons.warning_amber_rounded : Icons.event_outlined,
+                                          size: 14, color: gecikti ? renkSemasi.error : renkSemasi.primary),
                                         const SizedBox(width: 4),
                                         Text(
                                           _tarihFormatla(oge.sonTarih!),
