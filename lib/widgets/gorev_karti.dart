@@ -126,14 +126,9 @@ class GorevKarti extends StatelessWidget {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.folder_outlined,
-                                          size: 14,
-                                          color: renkSemasi.onSurface
-                                              .withValues(alpha: 0.5)),
+                                      Icon(Icons.folder_outlined, size: 14, color: renkSemasi.onSurface.withValues(alpha: 0.5)),
                                       const SizedBox(width: 4),
-                                      Text(oge.kategori,
-                                          style:
-                                              const TextStyle(fontSize: 12)),
+                                      Text(oge.kategori, style: const TextStyle(fontSize: 12)),
                                     ],
                                   ),
                                   // Öncelik Rozeti
