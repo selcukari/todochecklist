@@ -36,8 +36,7 @@ class GorevKarti extends StatelessWidget {
     final gecikti = oge.geciktiMi && !oge.tamamlandi;
     final radius = BorderRadius.circular(16);
 
-    final tamamlananAlt =
-        oge.altGorevler.where((alt) => alt.tamamlandi).length;
+    final tamamlananAlt = oge.altGorevler.where((alt) => alt.tamamlandi).length;
     final toplamAlt = oge.altGorevler.length;
 
     return Dismissible(
