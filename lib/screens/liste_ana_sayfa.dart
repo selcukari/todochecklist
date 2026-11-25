@@ -516,9 +516,7 @@ class ListeAnaSayfa extends ConsumerWidget {
                                     .read(gorevlerProvider.notifier)
                                     .durumDegistir(oge.id, yeniDurum);
                                 if (yeniDurum == true) {
-                                  ref
-                                      .read(konfetiTetikleyiciProvider.notifier)
-                                      .state++;
+                                  ref.read(konfetiTetikleyiciProvider.notifier).state++;
                                 }
                               },
                               onDuzenle: () => _formPenceresiniAc(

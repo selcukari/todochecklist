@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../utils/toast_helper.dart';
+import '../utils/interstitial_ad_service.dart';
+import '../theme/app_theme.dart';
 
 /// Listenin üstünde tek satırlık hızlı görev ekleme alanı.
 /// Yaz, Enter'a bas (veya oka dokun) → görev eklenir, alan açık kalır.
@@ -30,6 +33,17 @@ class _HizliEkleAlaniState extends State<HizliEkleAlani> {
     _controller.clear();
     // Arka arkaya görev girebilmek için odağı koru
     _odak.requestFocus();
+
+    gFToastShowToast(
+      context: context,
+      message: 'Yeni görev başarıyla kaydedildi.',
+      backgroundColor: AppColors.coral
+    );
+    // geciş Reklamı şimdilik kapat canlıya alınınca ac
+    Future.delayed(
+       const Duration(milliseconds: 600),
+       InterstitialAdService.instance.eylemSonrasiGoster,
+    );
   }
 
   @override
