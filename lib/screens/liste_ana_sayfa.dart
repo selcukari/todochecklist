@@ -163,64 +163,43 @@ class ListeAnaSayfa extends ConsumerWidget {
     final tamamlananSayisi = tumOgeler.where((e) => e.tamamlandi).length;
 
     final siralamaAktif = siralamaKriteri == SiralamaKriteri.eklenmeSirasi &&
-      seciliKategori == 'Tümü' &&
-      tarihFiltresi == TarihFiltresi.hepsi &&
-      !sadeceBekleyenler &&
-      aramaMetni.isEmpty;
+      seciliKategori == 'Tümü' && tarihFiltresi == TarihFiltresi.hepsi &&
+      !sadeceBekleyenler && aramaMetni.isEmpty;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Akıllı Liste'),
         actions: [
           FilterChip(
-            label: const Text('Bekleyenler'),
-            selected: sadeceBekleyenler,
-            showCheckmark: false,
-            avatar: Icon(
-              Icons.schedule,
-              size: 18,
-              color: sadeceBekleyenler
-                  ? renkSemasi.onTertiaryContainer
-                  : renkSemasi.onSurface.withValues(alpha: 0.6),
+            label: const Text('Bekleyenler'), selected: sadeceBekleyenler,
+            showCheckmark: false, avatar: Icon(Icons.schedule, size: 18,
+              color: sadeceBekleyenler ? renkSemasi.onTertiaryContainer : renkSemasi.onSurface.withValues(alpha: 0.6),
             ),
             selectedColor: renkSemasi.tertiaryContainer,
-            labelStyle: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: sadeceBekleyenler
-                  ? renkSemasi.onTertiaryContainer
-                  : renkSemasi.onSurface,
+            labelStyle: TextStyle(fontWeight: FontWeight.w600,
+              color: sadeceBekleyenler ? renkSemasi.onTertiaryContainer : renkSemasi.onSurface,
             ),
-            onSelected: (val) =>
-                ref.read(sadeceTamamlanmayanlarProvider.notifier).state = val,
+            onSelected: (val) => ref.read(sadeceTamamlanmayanlarProvider.notifier).state = val,
           ),
-          PopupMenuButton<SiralamaKriteri>(
-            tooltip: 'Sırala',
-            icon: Icon(
-              Icons.sort,
+          PopupMenuButton<SiralamaKriteri>(tooltip: 'Sırala',
+            icon: Icon(Icons.sort,
               color: siralamaKriteri != SiralamaKriteri.eklenmeSirasi
-                  ? renkSemasi.primary
-                  : null,
+                  ? renkSemasi.primary : null,
             ),
             initialValue: siralamaKriteri,
-            onSelected: (kriter) =>
-                ref.read(siralamaKriteriProvider.notifier).state = kriter,
+            onSelected: (kriter) => ref.read(siralamaKriteriProvider.notifier).state = kriter,
             itemBuilder: (context) => SiralamaKriteri.values.map((kriter) {
               final secili = siralamaKriteri == kriter;
               return PopupMenuItem<SiralamaKriteri>(
                 value: kriter,
                 child: Row(
                   children: [
-                    Icon(
-                      secili ? Icons.check_circle : Icons.circle_outlined,
-                      size: 18,
-                      color: secili ? renkSemasi.primary : renkSemasi.outline,
+                    Icon(secili ? Icons.check_circle : Icons.circle_outlined,
+                      size: 18, color: secili ? renkSemasi.primary : renkSemasi.outline,
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      kriter.etiket,
-                      style: TextStyle(
-                        fontWeight:
-                            secili ? FontWeight.bold : FontWeight.normal,
+                    Text(kriter.etiket,
+                      style: TextStyle(fontWeight: secili ? FontWeight.bold : FontWeight.normal,
                         color: secili ? renkSemasi.primary : null,
                       ),
                     ),
@@ -243,14 +222,11 @@ class ListeAnaSayfa extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.email_outlined,
-                              size: 18, color: renkSemasi.primary),
+                          Icon(Icons.email_outlined, size: 18, color: renkSemasi.primary),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(
-                              kullanici?.email ?? 'Gmail bilgisi bulunamadı',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w500),
+                            child: Text(kullanici?.email ?? 'Gmail bilgisi bulunamadı',
+                              style: const TextStyle(fontWeight: FontWeight.w500),
                             ),
                           ),
                         ],
@@ -258,13 +234,11 @@ class ListeAnaSayfa extends ConsumerWidget {
                     ],
                   ),
                   actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
+                    TextButton(onPressed: () => Navigator.pop(ctx),
                       child: const Text('Kapat'),
                     ),
                     FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(0, 44),
+                      style: FilledButton.styleFrom(minimumSize: const Size(0, 44),
                       ),
                       onPressed: () async {
                         Navigator.pop(ctx);
@@ -285,10 +259,8 @@ class ListeAnaSayfa extends ConsumerWidget {
                   ? NetworkImage(kullanici!.photoURL!)
                   : null,
               child: kullanici?.photoURL == null
-                  ? Text(
-                      (kullanici?.email?.isNotEmpty == true)
-                          ? kullanici!.email![0].toUpperCase()
-                          : '?',
+                  ? Text((kullanici?.email?.isNotEmpty == true)
+                          ? kullanici!.email![0].toUpperCase() : '?',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     )
                   : null,
@@ -320,35 +292,25 @@ class ListeAnaSayfa extends ConsumerWidget {
                           onEkle: (baslik) {
                       final kategori =
                           seciliKategori == 'Tümü' ? 'Alışveriş' : seciliKategori;
-                            ref.read(gorevlerProvider.notifier).ekle(
-                                  baslik: baslik,
-                                  kategori: kategori,
-                                  oncelik: Oncelik.orta,
-                                  sonTarih: null,
-                                );
+                            ref.read(gorevlerProvider.notifier).ekle(baslik: baslik, kategori: kategori, oncelik: Oncelik.orta, sonTarih: null);
                           },
                         ),
                         Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          child: SearchBar(
-                            hintText: 'Görev veya ürün ara...',
+                          child: SearchBar(hintText: 'Görev veya ürün ara...',
                       leading: Icon(Icons.search, color: renkSemasi.primary),
                             elevation: const WidgetStatePropertyAll(0),
-                            backgroundColor:
-                                WidgetStatePropertyAll(renkSemasi.surface),
+                            backgroundColor: WidgetStatePropertyAll(renkSemasi.surface),
                             shape: WidgetStatePropertyAll(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16),
                                 side: BorderSide(color: renkSemasi.outline),
                               ),
                             ),
-                      onChanged: (deger) =>
-                          ref.read(aramaMetniProvider.notifier).state = deger,
+                      onChanged: (deger) => ref.read(aramaMetniProvider.notifier).state = deger,
                           ),
                         ),
-                        SizedBox(
-                          height: 54,
+                        SizedBox(height: 54,
                           child: ListView.separated(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
@@ -364,29 +326,20 @@ class ListeAnaSayfa extends ConsumerWidget {
                                 showCheckmark: false,
                                 backgroundColor: renkSemasi.surface,
                                 selectedColor: renkSemasi.primary,
-                                side: BorderSide(
-                                  color: secili
-                                      ? renkSemasi.primary
-                                      : renkSemasi.outline,
+                                side: BorderSide(color: secili ? renkSemasi.primary : renkSemasi.outline,
                                 ),
-                                labelStyle: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: secili
-                                      ? renkSemasi.onPrimary
-                                      : renkSemasi.onSurface,
+                                labelStyle: TextStyle(fontWeight: FontWeight.w600,
+                                  color: secili ? renkSemasi.onPrimary : renkSemasi.onSurface,
                                 ),
-                                onSelected: (_) => ref
-                                    .read(seciliKategoriProvider.notifier)
+                                onSelected: (_) => ref.read(seciliKategoriProvider.notifier)
                                     .state = kategori,
                               );
                             },
                           ),
                         ),
-                        SizedBox(
-                          height: 44,
+                        SizedBox(height: 44,
                           child: ListView.separated(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                             scrollDirection: Axis.horizontal,
                             itemCount: TarihFiltresi.values.length,
                       separatorBuilder: (_, __) => const SizedBox(width: 8),
@@ -394,32 +347,18 @@ class ListeAnaSayfa extends ConsumerWidget {
                               final filtre = TarihFiltresi.values[index];
                               final secili = tarihFiltresi == filtre;
                               return FilterChip(
-                                avatar: Icon(
-                                  _tarihIkonu(filtre),
-                                  size: 16,
-                                  color: secili
-                                      ? renkSemasi.onPrimaryContainer
+                                avatar: Icon(_tarihIkonu(filtre), size: 16, color: secili ? renkSemasi.onPrimaryContainer
                                 : renkSemasi.onSurface.withValues(alpha: 0.6),
                                 ),
                                 label: Text(filtre.etiket),
-                                selected: secili,
-                                showCheckmark: false,
+                                selected: secili, showCheckmark: false,
                                 backgroundColor: renkSemasi.surface,
                                 selectedColor: renkSemasi.primaryContainer,
-                                side: BorderSide(
-                                  color: secili
-                                      ? renkSemasi.primary
-                                      : renkSemasi.outline,
-                                ),
+                                side: BorderSide(color: secili ? renkSemasi.primary : renkSemasi.outline),
                                 labelStyle: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: secili
-                                      ? renkSemasi.onPrimaryContainer
-                                      : renkSemasi.onSurface,
+                                  fontWeight: FontWeight.w600, color: secili ? renkSemasi.onPrimaryContainer  : renkSemasi.onSurface,
                                 ),
-                                onSelected: (_) => ref
-                                    .read(tarihFiltresiProvider.notifier)
-                                    .state = filtre,
+                                onSelected: (_) => ref.read(tarihFiltresiProvider.notifier)  .state = filtre,
                               );
                             },
                           ),
@@ -430,10 +369,8 @@ class ListeAnaSayfa extends ConsumerWidget {
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: TextButton.icon(
-                                onPressed: () =>
-                                    _tamamlananlariTemizle(context, ref),
-                                icon: const Icon(Icons.cleaning_services_outlined,
-                                    size: 18),
+                                onPressed: () => _tamamlananlariTemizle(context, ref),
+                                icon: const Icon(Icons.cleaning_services_outlined, size: 18),
                           label:
                               Text('Tamamlananları temizle ($tamamlananSayisi)'),
                               ),
@@ -450,35 +387,20 @@ class ListeAnaSayfa extends ConsumerWidget {
                           padding: const EdgeInsets.fromLTRB(16, 24, 16, 80),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 96,
-                                height: 96,
-                                decoration: BoxDecoration(
-                                  color: renkSemasi.primaryContainer,
-                                  shape: BoxShape.circle,
+                            children: [Container(width: 96, height: 96,
+                                decoration: BoxDecoration(color: renkSemasi.primaryContainer, shape: BoxShape.circle,
                                 ),
-                                child: Icon(
-                                  Icons.checklist_rtl,
-                                  size: 44,
-                                  color: renkSemasi.primary,
+                                child: Icon(Icons.checklist_rtl, size: 44, color: renkSemasi.primary,
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              Text(
-                                'Listede gösterilecek öğe yok',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: renkSemasi.onSurface,
+                              Text('Listede gösterilecek öğe yok',
+                                style: TextStyle(fontSize: 16,  fontWeight: FontWeight.w600,  color: renkSemasi.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                'Yeni Ekle ile ilk görevini oluştur',
-                                style: TextStyle(
-                            color:
-                                renkSemasi.onSurface.withValues(alpha: 0.55),
+                              Text('Yeni Ekle ile ilk görevini oluştur',
+                                style: TextStyle(color: renkSemasi.onSurface.withValues(alpha: 0.55),
                                 ),
                               ),
                             ],
@@ -493,37 +415,26 @@ class ListeAnaSayfa extends ConsumerWidget {
                         itemCount: gosterilecekListe.length,
                         onReorder: (eskiIndex, yeniIndex) {
                           if (!siralamaAktif) return;
-                          ref
-                              .read(gorevlerProvider.notifier)
-                              .yenidenSirala(eskiIndex, yeniIndex);
+                          ref.read(gorevlerProvider.notifier).yenidenSirala(eskiIndex, yeniIndex);
                         },
-                        proxyDecorator: (child, index, animation) => Material(
-                          color: Colors.transparent,
-                          elevation: 6,
-                          borderRadius: BorderRadius.circular(16),
+                        proxyDecorator: (child, index, animation) => Material(color: Colors.transparent, elevation: 6, borderRadius: BorderRadius.circular(16),
                           child: child,
                         ),
                         itemBuilder: (context, index) {
                           final oge = gosterilecekListe[index];
                           return ReorderableDelayedDragStartListener(
                             key: ValueKey(oge.id),
-                            index: index,
-                            enabled: siralamaAktif,
+                            index: index, enabled: siralamaAktif,
                             child: GorevKarti(
                               oge: oge,
                               onDurumDegisti: (yeniDurum) {
-                                ref
-                                    .read(gorevlerProvider.notifier)
-                                    .durumDegistir(oge.id, yeniDurum);
+                                ref.read(gorevlerProvider.notifier).durumDegistir(oge.id, yeniDurum);
                                 if (yeniDurum == true) {
                                   ref.read(konfetiTetikleyiciProvider.notifier).state++;
                                 }
                               },
                               onDuzenle: () => _formPenceresiniAc(
-                                context,
-                                ref,
-                                mevcutOge: oge,
-                              ),
+                                context, ref, mevcutOge: oge),
                               onSilindi: () => _ogeSil(context, ref, oge),
                             ),
                           );
@@ -534,22 +445,15 @@ class ListeAnaSayfa extends ConsumerWidget {
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              child: BannerAdWidget(),
-            ),
-          ),
+          const SafeArea(top: false, child: Padding(padding: EdgeInsets.symmetric(vertical: 4),
+            child: BannerAdWidget())),
         ],
       ),
-          const Positioned.fill(child: KonfetiKatmani()),
-        ],
+        const Positioned.fill(child: KonfetiKatmani())],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _formPenceresiniAc(context, ref),
-        icon: const Icon(Icons.add),
-        label: const Text('Yeni Ekle'),
+        icon: const Icon(Icons.add), label: const Text('Yeni Ekle'),
       ),
     );
   }
