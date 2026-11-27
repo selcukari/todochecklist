@@ -1,19 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthServisi {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   bool _baslatildi = false;
 
-  // Web Client ID'nizin Google Cloud / Firebase konsolu ile eşleştiğinden emin olun
-  static const String _webClientId = '750249627763-i0a4eqj4hd4gg8nvnmcm332kspe2n1sc.apps.googleusercontent.com';
-
   Future<void> _baslatilmisOlsun() async {
+    
+    final webClientId = dotenv.env['Firebase_WebClientId'] ?? '';
+    if (webClientId.isEmpty) return;
+
     if (!_baslatildi) {
       try {
         await _googleSignIn.initialize(
-          serverClientId: _webClientId,
+          serverClientId: webClientId,
         );
         _baslatildi = true;
       } catch (e) {
